@@ -20,13 +20,14 @@ public sealed class Route53DomainsClientUtil : IRoute53DomainsClientUtil
     {
         _client = new AsyncSingleton<AmazonRoute53DomainsClient>(async (token, _) =>
         {
-            string regionName = configuration.GetValue<string>("Aws:Region") ?? "us-east-1";
-
             BasicAWSCredentials credentials = await credentialsUtil.Get(token).NoSync();
 
-            RegionEndpoint? regionEndpoint = RegionEndpoint.GetBySystemName(regionName);
+            var config = new AmazonRoute53DomainsConfig
+            {
+                RegionEndpoint = RegionEndpoint.USEast1
+            };
 
-            return new AmazonRoute53DomainsClient(credentials, regionEndpoint);
+            return new AmazonRoute53DomainsClient(credentials, config);
         });
     }
 
