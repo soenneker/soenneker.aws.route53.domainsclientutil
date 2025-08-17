@@ -44,6 +44,6 @@
     <ItemGroup>
         <PackageReference Include="AWSSDK.Route53Domains" Version="4.0.0.19" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.8" />
-        <PackageReference Include="Soenneker.Aws.BasicCredentials" Version="3.0.36" />
+        <PackageReference Include="Soenneker.Aws.BasicCredentials" Version="3.0.37" />
     </ItemGroup>
 </Project>
