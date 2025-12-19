@@ -18,7 +18,7 @@ public sealed class Route53DomainsClientUtil : IRoute53DomainsClientUtil
 
     public Route53DomainsClientUtil(IBasicAwsCredentialsUtil credentialsUtil, IConfiguration configuration)
     {
-        _client = new AsyncSingleton<AmazonRoute53DomainsClient>(async (token, _) =>
+        _client = new AsyncSingleton<AmazonRoute53DomainsClient>(async token =>
         {
             BasicAWSCredentials credentials = await credentialsUtil.Get(token).NoSync();
 
