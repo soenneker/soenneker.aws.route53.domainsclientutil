@@ -15,20 +15,24 @@ namespace Soenneker.Aws.Route53.DomainsClientUtil;
 public sealed class Route53DomainsClientUtil : IRoute53DomainsClientUtil
 {
     private readonly AsyncSingleton<AmazonRoute53DomainsClient> _client;
+    private readonly IBasicAwsCredentialsUtil _credentialsUtil;
 
     public Route53DomainsClientUtil(IBasicAwsCredentialsUtil credentialsUtil, IConfiguration configuration)
     {
-        _client = new AsyncSingleton<AmazonRoute53DomainsClient>(async token =>
+        _credentialsUtil = credentialsUtil;
+        _client = new AsyncSingleton<AmazonRoute53DomainsClient>(CreateClient);
+    }
+
+    private async ValueTask<AmazonRoute53DomainsClient> CreateClient(CancellationToken token)
+    {
+        BasicAWSCredentials credentials = await _credentialsUtil.Get(token).NoSync();
+
+        var config = new AmazonRoute53DomainsConfig
         {
-            BasicAWSCredentials credentials = await credentialsUtil.Get(token).NoSync();
+            RegionEndpoint = RegionEndpoint.USEast1
+        };
 
-            var config = new AmazonRoute53DomainsConfig
-            {
-                RegionEndpoint = RegionEndpoint.USEast1
-            };
-
-            return new AmazonRoute53DomainsClient(credentials, config);
-        });
+        return new AmazonRoute53DomainsClient(credentials, config);
     }
 
     public AmazonRoute53DomainsClient GetSync(CancellationToken cancellationToken = default)
