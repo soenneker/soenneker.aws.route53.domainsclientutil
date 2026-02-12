@@ -1,7 +1,6 @@
 ﻿using Amazon;
 using Amazon.Route53Domains;
 using Amazon.Runtime;
-using Microsoft.Extensions.Configuration;
 using Soenneker.Aws.BasicCredentials.Abstract;
 using Soenneker.Aws.Route53.DomainsClientUtil.Abstract;
 using Soenneker.Extensions.ValueTask;
@@ -17,7 +16,7 @@ public sealed class Route53DomainsClientUtil : IRoute53DomainsClientUtil
     private readonly AsyncSingleton<AmazonRoute53DomainsClient> _client;
     private readonly IBasicAwsCredentialsUtil _credentialsUtil;
 
-    public Route53DomainsClientUtil(IBasicAwsCredentialsUtil credentialsUtil, IConfiguration configuration)
+    public Route53DomainsClientUtil(IBasicAwsCredentialsUtil credentialsUtil)
     {
         _credentialsUtil = credentialsUtil;
         _client = new AsyncSingleton<AmazonRoute53DomainsClient>(CreateClient);
