@@ -1,20 +1,19 @@
-﻿using Soenneker.Aws.Route53.DomainsClientUtil.Abstract;
-using Soenneker.Tests.FixturedUnit;
-using Xunit;
+using Soenneker.Aws.Route53.DomainsClientUtil.Abstract;
+using Soenneker.Tests.HostedUnit;
 
 namespace Soenneker.Aws.Route53.DomainsClientUtil.Tests;
 
-[Collection("Collection")]
-public sealed class Route53DomainsClientUtilTests : FixturedUnitTest
+[ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
+public sealed class Route53DomainsClientUtilTests : HostedUnitTest
 {
     private readonly IRoute53DomainsClientUtil _util;
 
-    public Route53DomainsClientUtilTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
+    public Route53DomainsClientUtilTests(Host host) : base(host)
     {
         _util = Resolve<IRoute53DomainsClientUtil>(true);
     }
 
-    [Fact]
+    [Test]
     public void Default()
     {
 
