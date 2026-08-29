@@ -11,16 +11,16 @@ namespace Soenneker.Aws.Route53.DomainsClientUtil.Abstract;
 public interface IRoute53DomainsClientUtil : IDisposable, IAsyncDisposable
 {
     /// <summary>
-    /// Gets sync.
+    /// Returns the configured amazon Route53 Domains Client used by the route53 domains client.
     /// </summary>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The result of the operation.</returns>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <returns>The requested amazon Route53 Domains Client.</returns>
     AmazonRoute53DomainsClient GetSync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Gets the value.
+    /// Returns the configured amazon Route53 Domains Client used by the route53 domains client.
     /// </summary>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A task containing the result of the operation.</returns>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <returns>A task whose result is the requested amazon Route53 Domains Client.</returns>
     ValueTask<AmazonRoute53DomainsClient> Get(CancellationToken cancellationToken = default);
 }
