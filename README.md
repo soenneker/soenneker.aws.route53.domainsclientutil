@@ -5,40 +5,61 @@
 
 # Soenneker.Aws.Route53.DomainsClientUtil
 
-A .NET thread-safe singleton For AWS's Route53 domain client, AmazonRoute53DomainsClient.
+Creates and caches an authenticated AWS SDK `AmazonRoute53DomainsClient` for dependency-injected applications.
 
-## Install
+## Installation
 
 ```bash
 dotnet add package Soenneker.Aws.Route53.DomainsClientUtil
 ```
 
-## Quick start
+## Configuration
 
-```csharp
-using Soenneker.Aws.Route53.DomainsClientUtil.Registrars;
-using Microsoft.Extensions.DependencyInjection;
-
-var services = new ServiceCollection();
-var result = services.AddRoute53DomainsClientUtilAsSingleton();
+```json
+{
+  "Aws": {
+    "AccessKey": "access-key-id",
+    "SecretKey": "secret-access-key"
+  }
+}
 ```
 
-Adds `IRoute53DomainsClientUtil` as a singleton service.
+Keep these values in a secret provider rather than source-controlled configuration.
 
-## What you get
+## Registration and use
 
-- `IRoute53DomainsClientUtil` — A .NET thread-safe singleton For AWS's Route53 domain client, AmazonRoute53DomainsClient.
-- `Route53DomainsClientUtilRegistrar` — A .NET thread-safe singleton For AWS's Route53 domain client, AmazonRoute53DomainsClient.
+```csharp
+using Amazon.Route53Domains;
+using Amazon.Route53Domains.Model;
+using Soenneker.Aws.Route53.DomainsClientUtil.Abstract;
+using Soenneker.Aws.Route53.DomainsClientUtil.Registrars;
 
-## API at a glance
+builder.Services.AddRoute53DomainsClientUtilAsSingleton();
 
-| API | What it does | Result / important behavior |
-| --- | --- | --- |
-| `Route53DomainsClientUtilRegistrar.AddRoute53DomainsClientUtilAsSingleton(services)` | Adds `IRoute53DomainsClientUtil` as a singleton service. | The same service collection, so additional registrations can be chained. |
-| `Route53DomainsClientUtilRegistrar.AddRoute53DomainsClientUtilAsScoped(services)` | Adds `IRoute53DomainsClientUtil` as a scoped service. | The same service collection, so additional registrations can be chained. |
+public sealed class DomainLookup(IRoute53DomainsClientUtil clientUtil)
+{
+    public async Task<GetDomainDetailResponse> Get(
+        string domain,
+        CancellationToken cancellationToken)
+    {
+        AmazonRoute53DomainsClient client =
+            await clientUtil.Get(cancellationToken);
 
-## Practical notes
+        return await client.GetDomainDetailAsync(
+            new GetDomainDetailRequest { DomainName = domain },
+            cancellationToken);
+    }
+}
+```
 
-- Reuse the registered client instead of constructing one per operation.
-- Calls that return a cached or singleton value reuse the same instance until the owning service is disposed.
-- Dispose instances you own when their scope ends so held resources can be released.
+The registrar includes `Soenneker.Aws.BasicCredentials`. The client is configured for `RegionEndpoint.USEast1`, the Route 53 Domains endpoint used by this utility.
+
+## Lifecycle
+
+- The AWS client and credentials are initialized once and cached.
+- `GetSync()` exposes the same cached client for synchronous construction paths.
+- Configuration changes do not rotate an already-created client.
+- Use the scoped registrar only when the wrapper should be scoped; its credential dependency remains singleton.
+- Let DI dispose the utility so the AWS SDK client is released correctly.
+
+For common registration, availability, nameserver, and DNSSEC operations, use the higher-level `Soenneker.Aws.Route53.Domains` package.
