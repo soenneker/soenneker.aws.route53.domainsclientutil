@@ -46,6 +46,6 @@
 
     <ItemGroup>
         <PackageReference Include="AWSSDK.Route53Domains" Version="4.0.100.14" />
-        <PackageReference Include="Soenneker.Aws.BasicCredentials" Version="4.0.329" />
+        <PackageReference Include="Soenneker.Aws.BasicCredentials" Version="4.0.330" />
     </ItemGroup>
 </Project>
